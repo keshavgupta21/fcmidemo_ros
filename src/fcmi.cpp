@@ -4,8 +4,8 @@
 
 #include <fcmidemo/baseaddr.h>
 
-FCMIDriver::FCMIDriver(char *fname) {
-    PYNQ_loadBitstream(fname);
+FCMIDriver::FCMIDriver(const char *fname) {
+    PYNQ_loadBitstream((char*) fname);
     PYNQ_allocatedSharedMemory(&occTxBuf, sizeof(occdata_t) * MAP_SIZE * MAP_SIZE, 1);
     PYNQ_allocatedSharedMemory(&miRxBuf, sizeof(midata_t) * MAP_SIZE * MAP_SIZE, 1);
     PYNQ_openAXIGPIOCH(&state, AXI_GPIO0_BASE, 1);

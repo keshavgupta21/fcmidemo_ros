@@ -1,32 +1,39 @@
 #include <iostream>
 #include <chrono>
 
-#include <unistd.h>
+#include <ros/ros.h>
+#include <sensor_msgs/LaserScan.h>
 
 #include <fcmidemo/fcmi.h>
 #include <fcmidemo/gui.h>
 #include <fcmidemo/scan.h>
 
-int main(int argc, const char ** argv) {
-    FCMIDriver fcmi("/root/catkin_ws/src/racecar_simulator/bitstreams/top_cmap.bit");
-    ScanHandler scan(fcmi.getOccPtr());
-    GUI gui(scan.getFrameBuf(), fcmi.getMIPtr());
+class FCMIGui {
+private:
+    FCMIDriver fcmi;
+    ScanHandler scan;
+    GUI gui;
 
-    std::chrono::system_clock::time_point start = std::chrono::high_resolution_clock::now(), end;
-    unsigned int frameCounter = 0;
-    unsigned char t = 0;
-    while (true) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event) > 0) {
-            if (event.type == SDL_QUIT) {
-                return 0;
-            }
-        }
+    ros::NodeHandle n;
+    ros::Subscriber mapSub;
 
-        scan.updateScan(t++);
-        fcmi.calcMI();
-        gui.updateWindow();
+    int frameCounter;
+    std::chrono::system_clock::time_point start, end;
+public:
+    FCMIGui():
+        fcmi("/root/catkin_ws/src/racecar_simulator/bitstreams/top_cmap.bit"),
+        scan(fcmi.getOccPtr()), gui(scan.getFrameBuf(), fcmi.getMIPtr()),
+        n("~"), frameCounter(0), start(std::chrono::high_resolution_clock::now()) {
+        
+        std::string scanTopic;
+        n.getParam("scan_topic", scanTopic);
+        mapSub = n.subscribe(scanTopic, 1, &FCMIGui::updateScanCallback, this);
+    }
 
+    void updateScanCallback(const sensor_msgs::LaserScan &scanData) {
+        // scan.updateScan(127);
+        // fcmi.calcMI();
+        // gui.updateWindow();
         frameCounter++;
         if (frameCounter == 100) {
             end = std::chrono::high_resolution_clock::now();
@@ -37,5 +44,12 @@ int main(int argc, const char ** argv) {
         }
     }
 
+    /* assume default constructor */
+};
+
+int main(int argc, char ** argv) {
+    ros::init(argc, argv, "fcmidemo_gui");
+    FCMIGui gui;
+    ros::spin();
     return 0;
 }

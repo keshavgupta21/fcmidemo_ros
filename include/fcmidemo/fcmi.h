@@ -13,7 +13,7 @@ private:
     unsigned int gpioVal;
 
 public:
-    FCMIDriver(char *fname);
+    FCMIDriver(const char *fname);
 
     occdata_t* getOccPtr() {return (occdata_t*) occTxBuf.pointer;}
 

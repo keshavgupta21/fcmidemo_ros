@@ -15,5 +15,7 @@
   </node>
 
   <!-- Begin the demo viewer with the parameters from params.yaml -->
-  <node pkg="racecar_simulator" name="fcmidemo_gui" type="fcmidemo" output="screen"></node>
+  <node pkg="racecar_simulator" name="fcmidemo_gui" type="fcmidemo" output="screen">
+    <rosparam command="load" file="$(find racecar_simulator)/params.yaml"/>
+  </node>
 </launch>
