@@ -56,7 +56,7 @@ if(DEFINED CATKIN_DEVEL_PREFIX)
       INCLUDE_DIRS include
       LIBRARIES ${PROJECT_NAME}
   )
-  set(LIBS ${LIBS} ${catkin_LIBRARIES})
+  set(LIBS ${LIBS} ${catkin_LIBRARIES} pynq cma pthread SDL2)
   include_directories(include ${catkin_INCLUDE_DIRS})
 
   # Add the nodes

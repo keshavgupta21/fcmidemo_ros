@@ -140,3 +140,32 @@ Ackermann kinematics
 - Finish documentation
 - Simulate odometry and imu
 - Add colision detection?
+
+# FCMI Standalone Demo
+
+## Dependencies
+Install SDL2 through `sudo apt-get install libsdl2-dev`
+
+Install PYNQ API from: https://github.com/mesham/pynq_api
+
+Modification needed in `pynq_api.h` to compile with g++:
+
+```
+(struct definitions)
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+(function definitions)
+
+#ifdef __cplusplus
+}
+#endif
+```
+
+This demo also adds support for AXI GPIO by extending the `PYNQ_MMIO_WINDOW` struct.
+
+## TODO
+- Get max MI from hardware, maybe even division in hardware
+- Add support for ROS
