@@ -43,10 +43,10 @@ public:
         
         std::string scanTopic, scanPoseTopic, driveTopic;
         n.getParam("scan_topic", scanTopic);
-        mapSub = n.subscribe(scanTopic, 1, &FCMIGui::updateScanCallback, this);
+        mapSub = n.subscribe(scanTopic, 5, &FCMIGui::updateScanCallback, this);
 
         n.getParam("scanpose_topic", scanPoseTopic);
-        scanPoseSub = n.subscribe(scanPoseTopic, 1, &FCMIGui::updateScanPoseCallback, this);
+        scanPoseSub = n.subscribe(scanPoseTopic, 5, &FCMIGui::updateScanPoseCallback, this);
 
         n.getParam("drive_topic", driveTopic);
         drivePub = n.advertise<ackermann_msgs::AckermannDriveStamped>(driveTopic, 1);

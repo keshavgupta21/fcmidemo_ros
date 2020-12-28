@@ -10,7 +10,7 @@ GUI::GUI(unsigned int* occFrameBuf, unsigned int* miFrameBuf) {
     if (window == nullptr){
         std::cerr << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
     }
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
+    renderer = SDL_CreateRenderer(window, 2, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (renderer == nullptr){
         std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
     }

@@ -12,7 +12,7 @@ ScanHandler::ScanHandler(occdata_t* occGrid): occGrid(occGrid) {
 }
 
 void ScanHandler::resetOccGrid() {
-    unsigned char initPix = 50;
+    unsigned char initPix = 1;
     for (int y = 0; y < MAP_SIZE; y++) {
         for (int x = 0; x < MAP_SIZE; x++) {
             occGrid[y*MAP_SIZE + x] = initPix;
@@ -34,11 +34,9 @@ void ScanHandler::setScanPose(int x, int y, float th) {
 void ScanHandler::updateScan(const sensor_msgs::LaserScan &scanData) {
     int finalX, finalY, pix, finalDist;
     float th = scanData.angle_min, p, s, del;
-    // bool clip;
     for (float range: scanData.ranges) {
-        // clip = (range >= (scanData.range_max - mapRes));
         finalDist = range/mapRes;
-        for (float dist = 0; dist < finalDist; dist += 1.0f) {
+        for (float dist = 0; dist < finalDist + 1; dist += 1.0f) {
             // calculate final X and Y
             finalX = scanX + dist * std::sin(scanTh + th);
             finalY = scanY + dist * std::cos(scanTh + th);
@@ -49,7 +47,7 @@ void ScanHandler::updateScan(const sensor_msgs::LaserScan &scanData) {
 
             // set those pixels empty
             p = occGrid[finalY*MAP_SIZE + finalX]/100.0;
-            del = ((dist > finalDist - 2)) ? DEL_OCC : DEL_EMP;
+            del = ((dist > finalDist - 1)) ? DEL_OCC : DEL_EMP;
             s = (del * p)/(1 + (del - 1) * p);
             pix = s * 100.0;
             occGrid[finalY*MAP_SIZE + finalX] = pix;
