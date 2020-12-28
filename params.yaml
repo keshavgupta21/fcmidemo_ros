@@ -3,15 +3,15 @@
 wheelbase: 0.325 # meters
 
 # Limits on the speed and steering angle
-max_speed: 4. # meters/second
-max_steering_angle: 0.34 # radians
+max_speed: 1.0 # meters/second
+max_steering_angle: 0.20 # radians
 
 # The rate at which the pose and the lidar publish
-update_pose_rate: 0.02
+update_pose_rate: 0.05
 
 # Lidar simulation parameters
-scan_beams: 100
-scan_field_of_view: 4.71 # radians
+scan_beams: 64
+scan_field_of_view: 6.2831 # radians
 
 # The distance from the center of the
 # rear axis (base_link) to the lidar
@@ -39,6 +39,7 @@ map_topic: "/map"
 distance_transform_topic: "/dt"
 scan_topic: "/scan"
 pose_topic: "/pose"
+scanpose_topic: "/scanpose"
 odom_topic: "/odom"
 pose_rviz_topic: "/initialpose"
 

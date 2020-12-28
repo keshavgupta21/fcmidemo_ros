@@ -4,6 +4,7 @@
 #include <tf2/LinearMath/Quaternion.h>
 #include <tf2_ros/transform_broadcaster.h>
 #include <ackermann_msgs/AckermannDriveStamped.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/LaserScan.h>
@@ -29,6 +30,7 @@ class RacecarSimulator {
     double previous_seconds;
     double scan_distance_to_base_link;
     double max_speed, max_steering_angle;
+    double map_resolution;
 
     // A simulator of the laser
     ScanSimulator2D scan_simulator;
@@ -63,6 +65,7 @@ class RacecarSimulator {
     bool broadcast_transform;
     ros::Publisher scan_pub;
     ros::Publisher odom_pub;
+    ros::Publisher scanpose_pub;
 
   public:
 
@@ -77,13 +80,14 @@ class RacecarSimulator {
       previous_seconds = ros::Time::now().toSec();
 
       // Get the topic names
-      std::string joy_topic, drive_topic, map_topic, 
-        scan_topic, pose_topic, pose_rviz_topic, odom_topic;
+      std::string joy_topic, drive_topic, map_topic,
+        scan_topic, pose_topic, scanpose_topic, pose_rviz_topic, odom_topic;
       n.getParam("joy_topic", joy_topic);
       n.getParam("drive_topic", drive_topic);
       n.getParam("map_topic", map_topic);
       n.getParam("scan_topic", scan_topic);
       n.getParam("pose_topic", pose_topic);
+      n.getParam("scanpose_topic", scanpose_topic);
       n.getParam("odom_topic", odom_topic);
       n.getParam("pose_rviz_topic", pose_rviz_topic);
 
@@ -126,6 +130,9 @@ class RacecarSimulator {
 
       // Make a publisher for odometry messages
       odom_pub = n.advertise<nav_msgs::Odometry>(odom_topic, 1);
+
+      // Make a publisher for scanpose messages
+      scanpose_pub = n.advertise<std_msgs::Float32MultiArray>(scanpose_topic, 1);
 
       // Start a timer to output the pose
       update_pose_timer = n.createTimer(ros::Duration(update_pose_rate), &RacecarSimulator::update_pose, this);
@@ -206,6 +213,16 @@ class RacecarSimulator {
         scan_pose.x = pose.x + scan_distance_to_base_link * std::cos(pose.theta);
         scan_pose.y = pose.y + scan_distance_to_base_link * std::sin(pose.theta);
         scan_pose.theta = pose.theta;
+
+        // Publish the scan pose
+        int cellx, celly;
+        scan_simulator.xy_to_row_col(scan_pose.x, scan_pose.y, &cellx, &celly);
+        std_msgs::Float32MultiArray scanpose_msg;
+        scanpose_msg.data.push_back((float)cellx);
+        scanpose_msg.data.push_back((float)celly);
+        scanpose_msg.data.push_back(scan_pose.theta);
+        scanpose_msg.data.push_back(map_resolution);
+        scanpose_pub.publish(scanpose_msg);
 
         // Compute the scan from the lidar
         std::vector<double> scan = scan_simulator.scan(scan_pose);
@@ -310,6 +327,8 @@ class RacecarSimulator {
           map[i] = msg.data[i]/100.;
         }
       }
+
+      map_resolution = resolution;
 
       // Send the map to the scanner
       scan_simulator.set_map(
