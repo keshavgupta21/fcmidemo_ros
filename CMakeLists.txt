@@ -21,7 +21,7 @@ include_directories(include)
 file(GLOB SRC_FILES src/*.cpp)
 add_library(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} ${LIBS})
-set(LIBS ${LIBS} ${PROJECT_NAME})
+set(LIBS ${LIBS} ${PROJECT_NAME} pynq cma pthread SDL2)
 
 # Install the library to CMAKE_INSTALL_PREFIX
 # which defaults to /usr/local

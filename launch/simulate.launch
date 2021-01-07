@@ -13,4 +13,7 @@
   <node pkg="racecar_simulator" name="racecar_simulator" type="simulate" output="screen">
     <rosparam command="load" file="$(find racecar_simulator)/params.yaml"/>
   </node>
+  <node pkg="racecar_simulator" name="fcmidemo_gui" type="fcmidemo" output="screen">
+    <rosparam command="load" file="$(find racecar_simulator)/params.yaml"/>
+  </node>
 </launch>
